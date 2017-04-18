@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_index_post_macros.html" as macros %}
+{% block styles %}
+{{super()}}
+<style type="text/css">
+    body {
+      position: relative;
+    }
+.bs-callout {
+    padding: 10px;
+    margin: 0px 0;
+    border: 1px solid #ccc;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-radius: 3px;
+}
+ .bs-callout-d{
+  background: #f3f3f3;
+ }
+ .bs-callout-last{
+     border-bottom-width: 1px;
+ }
+ .bs-callout div img{ width:100px;height:100px;}
+ .headimg{width:250px;height:250px;}
+</style>
+{% endblock %}
+{% block main %}
+
+<div class="container">
+<div class="row">
+ <div class="col-xs-12 col-md-8 col-md-8 col-lg-8">
+  <div>
+      {% if current_user.is_authenticated %}
+      {{ wtf.quick_form(form) }}
+      {% endif %}
+  </div>
+  <br>
+  <ul class="nav nav-tabs">
+      <li role="presentation" class="active"><a href="#all">最新分享</a></li>
+  </ul>
+<div  class="tab-content" style="position: relative;">
+    <input type="hidden" value="1" id="page_num">
+    <input type="hidden" value="1" id="has_next">
+  <!--全部-->
+  <div id="all" role="tabpanel" class="tab-pane fade in active">
+    {{macros.rander_posts(posts,moment)}}
+  </div>
+</div>
+ </div>
+ <div class="col-md-4 col-md-4 col-lg-4">
+     <!--这里 当没有用户登录的时候 显示热门分享列表 稍后实现-->
+     {% if current_user.is_authenticated %}
+    <img src="http://on4ag3uf5.bkt.clouddn.com/{{current_user.headimg}}" alt="..." class="headimg img-thumbnail">
+     <br><br>
+     <p class="text-muted">我已经分享<span class="text-danger">{{ current_user.posts.count() }}</span>条心情</p>
+     <p class="text-muted">我已经关注了<span class="text-danger">{{ current_user.followed.count() }}</span>名好友</p>
+     <p class="text-muted">我已经被<span class="text-danger">{{ current_user.followers.count() }}</span>名好友关注</p>
+     {%endif%}
+ </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
+<script type="text/javascript">
+      $(window).scroll(function () {
+        var scrollTop = $(this).scrollTop();
+        var scrollHeight = $(document).height();
+        var windowHeight = $(this).height();
+        if (scrollTop + windowHeight == scrollHeight) {
+            $.getJSON({url:"{{url_for('api.posts')}}",data:{page:$("#page_num").val()-0+1},
+                success:function (data,status) {
+                $("#page_num").val(data.page);
+                 $("#has_next").val(data.has_next);
+                 console.log(data);
+                var html="";
+                for(var i=0;i<data.posts.length;i++) {
+                    html+="<div class='bs-callout";
+                    if(i%2==0){
+                       html+=" bs-callout-last ";
+                    }else
+                    {
+                       html+=" bs-callout-d ";
+                    }
+                    html+="'>";
+                    html+="<div class='row'>";
+                    html+="<div class='col-sm-2 col-md-2'>";
+                    html+="<a class='text-left' href='/user/"+data.posts[i].author.username+"'>";
+                    html+="<img src='http://on4ag3uf5.bkt.clouddn.com/"+data.posts[i].author.headimg+"'>";
+                    html+="</a>";
+                    html+="</div>";
+                    html+="<div class='col-sm-10 col-md-10'>";
+                    html+="<div>";
+                    html+="<p>";
+                    if(data.posts[i].body_html!=""){
+                        html+=data.posts[i].body_html;
+                    }else{
+                        html+=data.posts[i].body;
+                    }
+                    html+="</p>";
+                    html+="</div>";
+                    html+="<div>";
+                    html+="<a class='text-left' href='/user/"+data.posts[i].author.username+"'>"+data.posts[i].author.nickname+"</a>";
+                    html+="<span class='text-right'>发表于&nbsp; "+moment( data.posts[i].createtime).fromNow(refresh=true)+"前</span>";
+                    html+="</div>";
+                    html+="</div>";
+                    html+="</div>";
+                    html+="</div>";
+                    console.log(moment( data.posts[i].createtime).fromNow(refresh=true))
+                    console.log(moment( data.posts[i].createtime))
+                }
+                $("#all").html($("#all").html()+html);
+            }});
+        }
+    });
+</script>
+{% endblock%}

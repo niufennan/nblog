@@ -1,0 +1,39 @@
+{% macro rander_posts(posts,moment,pagination=None,endpoint=None) %}
+{% import "_posts_page_macros.html" as macros %}
+{% for post in posts %}
+  <div class="bs-callout
+          {% if loop.index % 2 ==0 %}
+           bs-callout-d
+          {% endif %}
+          {% if loop.last %}
+            bs-callout-last
+          {% endif %}" >
+      <div class="row">
+          <div class="col-sm-2 col-md-2">
+                <!--使用测试域名-->
+               <a class="text-left" href="{{url_for('main.user',username=post.author.username)}}">
+                <img src="http://on4ag3uf5.bkt.clouddn.com/{{post.author.headimg}}" alt="...">
+               </a>
+          </div>
+          <div class="col-sm-10 col-md-10">
+           <div>
+            <p>
+               {% if post.body_html%}
+                  {{post.body_html|safe}}
+                {% else %}
+               {{post.body}}
+               {% endif %}
+            </p>
+            </div>
+           <div>
+            <a class="text-left" href="{{url_for('main.user',username=post.author.username)}}">{{post.author.nickname}}</a>
+            <span class="text-right">发表于&nbsp;{{ moment( post.createtime).fromNow(refresh=True)}}</span>
+           </div>
+          </div>
+      </div>
+  </div>
+{% endfor %}
+{% if pagination and endpoint %}
+  {{macros.rander_page(pagination,endpoint)}}
+{% endif %}
+{%endmacro%}

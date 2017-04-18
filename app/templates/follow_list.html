@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}
+{{title}}
+{% endblock %}
+{% block main %}
+<style type="text/css">
+    .media-object{
+        width: 64px;
+        height:64px;
+    }
+</style>
+<div class="container">
+<div class="row">
+    <div>
+      {% for follow in follows %}
+        {% if type=="follower" %}
+        {% set user=follow.follower %}
+        {% else %}
+        {% set user=follow.followed %}
+        {% endif %}
+         <div class="
+         {% if loop.index % 2 ==0 %}
+            bg-warning
+         {% else %}
+           bg-info
+         {% endif %}
+        " style="padding: 3px;">
+
+                  <div class="media">
+                  <div class="media-left">
+                    <a href="#">
+                      <img class="media-object" src="http://on4ag3uf5.bkt.clouddn.com/{{user.headimg}}" alt="...">
+                    </a>
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">{{user.nickname}}</h4>
+                    {{follow.follower.remark[0,50]}}
+                      <div>
+                         关注时间：{{moment(follow.createtime).format('LL')}}
+                          &nbsp;&nbsp;
+                          {% if type=="follower" and  current_user.id==user.id %}
+                            <a href="{{url_for('main.unfollow',userid=user.id)}}" class="badge">取消关注</a>
+                         {% endif %}
+                      </div>
+                  </div>
+                </div>
+              </div>
+      {% endfor %}
+     </div>
+ </div>
+</div>
+{% endblock %}

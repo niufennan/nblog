@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_index_post_macros.html" as macros %}
+{% block main %}
+<style type="text/css">
+.bs-callout {
+    padding: 10px;
+    margin: 0px 0;
+    border: 1px solid #ccc;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-radius: 3px;
+}
+ .bs-callout-d{
+  background: #f3f3f3;
+ }
+ .bs-callout-last{
+     border-bottom-width: 1px;
+ }
+ .bs-callout div img{ width:100px;height:100px;}
+ .headimg{width:250px;height:250px;}
+</style>
+<div class="container">
+<div class="row">
+ <div class="col-xs-12 col-md-8 col-md-8 col-lg-8">
+  <div>
+      {% if current_user.is_authenticated %}
+      {{ wtf.quick_form(form) }}
+      {% endif %}
+  </div>
+  <br>
+
+<div  class="tab-content">
+  <!--全部-->
+  <div id="all" role="tabpanel" class="tab-pane fade in active">
+    {{macros.rander_posts(posts,moment,pagination,endpoint)}}
+  </div>
+</div>
+ </div>
+ <div class="col-md-4 col-md-4 col-lg-4">
+     <!--这里 当没有用户登录的时候 显示热门分享列表 稍后实现-->
+     {% if current_user.is_authenticated %}
+    <img src="http://on4ag3uf5.bkt.clouddn.com/{{current_user.headimg}}" alt="..." class="headimg img-thumbnail">
+     <br><br>
+     <p class="text-muted">我已经分享<span class="text-danger">{{ current_user.posts.count() }}</span>条心情</p>
+     <p class="text-muted">我已经关注了<span class="text-danger">{{ current_user.followed.count() }}</span>名好友</p>
+     <p class="text-muted">我已经被<span class="text-danger">{{ current_user.followers.count() }}</span>名好友关注</p>
+     {%endif%}
+ </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
+<script type="text/javascript">
+    $('.nav-tabs a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    })
+</script>
+{% endblock%}

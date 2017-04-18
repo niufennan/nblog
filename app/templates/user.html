@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block main %}
+<div class="container">
+    <div class="row">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+          <button type="button" class="close" data-dismiss="alter">&times</button>
+          {{message}}
+        </div>
+        {% endfor %}
+        <p>
+         <img src="http://on4ag3uf5.bkt.clouddn.com/{{user.headimg}}" alt="..." class="headimg img-thumbnail" style="width:300px; height: 300px">
+        </p>
+        <p>
+            {% if user.nickname%}{{user.nickname}}{%elif user.username %}{{ user.username }}{% endif %}
+        </p>
+        {% if user.username %}
+        <p>用户名：{{user.username}}</p>
+        {% endif %}
+        {% if user.username %}
+        <p>昵称：{{user.nickname}}</p>
+        {% endif %}
+         {% if user.email %}
+        <p>联系方式：<a href="mailto:{{user.email}}">{{user.email}}</a></p>
+        {% endif %}
+        {% if user.remark %}
+        <p>自我简介：{{user.remark}}</p>
+        {% endif %}
+        <p>
+            注册时间：{{moment(user.createtime).format('LL')}}
+            最终登录时间：{{moment(user.lastseen).format('LL')}}
+        </p>
+        <p>
+        {% if current_user.is_authenticated and current_user!=user %}
+            {% if current_user.is_following(user) %}
+                <button class="btn btn-primary" type="button">
+                已关注 <a href="{{url_for('main.unfollow',userid=user.id)}}" class="badge">取消</a>
+                </button>
+            {% else %}
+                <a href="{{url_for('main.follow',userid=user.id)}}" type="button" class="btn btn-primary">关注此用户</a>
+            {% endif %}
+        {% endif %}
+            <!--显示用户列表-->
+            &nbsp;&nbsp;<a href="{{url_for('main.follow_list',type='follower',userid=user.id)}}">共有{{user.followers.count()}}人关注</a>
+            &nbsp;&nbsp;<a href="{{url_for('main.follow_list',type='followed',userid=user.id)}}">共关注{{user.followed.count()}}人</a>
+        {% if current_user.is_authenticated and current_user!=user %}
+            {% if current_user.is_followed_by(user) %}
+                <span class="label label-default">已关注我</span>
+            {% endif %}
+        {% endif %}
+        </p>
+        <p>
+            {% if current_user.is_authenticated and current_user==user %}
+            <a href="{{url_for('main.editProfile')}}">修改个人信息</a>
+            {% endif %}
+            {% if current_user.is_administrator() %}
+            <a href="#">修改该用户信息</a>
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endblock %}
