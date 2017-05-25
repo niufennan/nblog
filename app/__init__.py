@@ -16,9 +16,7 @@ login_manager=LoginManager();
 pagedown=PageDown();
 moment=Moment();
 access_key=os.environ.get("qn_access_key")
-print(access_key)
 secret_key=os.environ.get("qn_secret_key")
-print(secret_key)
 qn=Auth(access_key,secret_key)
 
 def create_app():
