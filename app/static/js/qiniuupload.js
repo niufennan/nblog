@@ -45,16 +45,20 @@ function setImg( tempurl,imgKey){
       var temphtml="<div class='form-group'><label class='control-label'>头像预览</label>"
         temphtml+="<div><img src='"+tempurl+"/"+imgKey+"'  class='img-thumbnail' style='width:200px;height:200px;'></div>";
         temphtml+="</div>";
+        //console.log(($("#headimg").parent().next().find("img")))
         //删除之前的预览图
-        if($("#headimg").parent().next().find("img"))
+        if($("#headimg").parent().next().find("img").length>0)
         {
            $("#headimg").parent().next().remove()
         }
         //修改key
         $("#headkey").val(imgKey)
         //增加预览图
+        console.log( $("#headimg").parent().after().html())
         $("#headimg").parent().after(temphtml);
-        $("#headimg").hide();
+        console.log( $("#headimg").parent().after().html())
+        $("#headimg").parent().hide();
+        console.log("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 }
 
 function reSetImg(tempurl) {
@@ -62,4 +66,5 @@ function reSetImg(tempurl) {
         temphtml+="<div><img src='"+tempurl+"/"+$("#headkey").val()+"'  class='img-thumbnail' style='width:200px;height:200px;'></div>";
         temphtml+="</div>";
     $("#headimg").parent().after(temphtml);
+
 }
