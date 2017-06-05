@@ -163,6 +163,19 @@ Gunicorn是一个Python的http服务器，使用起来非常简单，安装也�
 
 vi /etc/profile
 
+然后下拉到文档最低端 
+
+![](捕获4_环境变量)
+
+好，现在在服务器上就可以跑起来了。
+
+../virtualenv/python manage.py runserver
+
+
+
+
+
+
 
 
 
