@@ -161,15 +161,25 @@ Gunicorn是一个Python的http服务器，使用起来非常简单，安装也�
 	
 >其中七牛的都是公共的，以后即使有其他的应用，这两个依然不会变，sql链接字符串则是项目私有的，所有使用nblog前缀。
 
-vi /etc/profile
+	vi /etc/profile
 
 然后下拉到文档最低端 
 
-![](捕获4_环境变量)
+![](http://ojzct6bcl.bkt.clouddn.com/cblog/pflask14/201706062340.PNG)
 
 好，现在在服务器上就可以跑起来了。
 
-../virtualenv/python manage.py runserver
+	../virtualenv/python manage.py runserver
+
+看看服务器:
+
+![](http://ojzct6bcl.bkt.clouddn.com/cblog/pflask14/201703032345.PNG)
+
+这个时候，你肯定迫不及待的想要从自己的PC机上看到成果了，那么，该如何做呢，在这里，我是把nblog这个二级域名分配给了这个轻博客，这样，需要对Nginx进行一些配置，首先进入Nginx的目录：
+
+	cd /etc/nginx
+
+这里注意两个目录： sites-available和sites-enable，很好理解，看名字就能看出来，一个是备用一个是使用，下面在sites-available中
 
 
 
