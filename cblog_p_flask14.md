@@ -104,7 +104,7 @@ Gunicorn是一个Python的http服务器，使用起来非常简单，安装也�
 	git push -u nblog master 
 
 ## 虚拟环境使用
-到了这里，突然发现之前的blog中，或者说开发中犯了一个严重的错误，即没有使用virtualenv，这个将导致在服务器上配置运行环境将变成了一件非常繁琐，困难，甚至变成挑战自己极限的事情，不过好在还可以不就，那么，首先在**服务端**安装virtualenv吧：
+到了这里，突然发现之前的blog中，或者说开发中犯了一个**严重**的错误，即没有使用virtualenv，这个将导致在服务器上配置运行环境将变成了一件非常繁琐，困难，甚至变成挑战自己极限的事情，不过好在还可以不就，那么，首先在**服务端**安装virtualenv吧：
 
 	sudo pip install virtualenv
 
@@ -179,7 +179,67 @@ Gunicorn是一个Python的http服务器，使用起来非常简单，安装也�
 
 	cd /etc/nginx
 
-这里注意两个目录： sites-available和sites-enable，很好理解，看名字就能看出来，一个是备用一个是使用，下面在sites-available中
+这里注意两个目录： sites-available和sites-enable，很好理解，看名字就能看出来，一个是备用一个是使用，下面在sites-available中新建我们所需要的nginx配置文件：
+
+	sudo vi nblog.niufennan.com
+
+用vi创建后，输入如下内容：
+
+	server{
+        listen 80;
+        server_name nblog.niufennan.com;
+        location / {
+                proxy_pass http://127.0.0.1:5000;
+        }	
+	}
+
+很简单，页很好理解，即当域名为nblog.niufennan.com的时候，反向转发到127.0.0.1：5000
+保存后，通过软连接的方式，链接到sites-enable中
+
+	sudo ln -s /etc/nginx/sites-available/nblog.niufennan.com  /etc/nginx/sites-enable/nblog.niufennan.com
+
+然后重启nginx
+
+	sudo service nginx reload
+启动服务
+
+	../virtualenv/python manage.py runserver
+
+ok，现在迫不及待的想要在本地访问了，地址栏中输入域名
+
+	nblog.niufennan.com
+
+完美，但是此时做任何操作，都会报错，因为数据库还没有迁移，进入项目目录，进行数据库迁移操作：
+
+	../virtualenv/python manage.py db init
+	../virtualenv/python manage.py db migrate -m "服务器"
+	../virtualenv/python manage.py db upgrade
+
+>注意，这里我遇到了一个问题，即数据库迁移后的编码为utf8，中文会有乱码问题，需手动通过客户端修改编码为utf8mb4，不知是否有自动化的方式，望高手解惑。
+
+在运行，刷新数据库，经过简单的测试，ok，完美：
+
+![](http://ojzct6bcl.bkt.clouddn.com/cblog/pflask14/201706072245.PNG)
+	
+但是，人生貌似就怕说但是，这个时候，生命周期仅仅是这个控制台，也就是说，一旦控制台关闭了，对于现在来说，也就是xshell断开连接，则服务也就关闭了，即无法访问了，那么，这时候，应该怎么办呢？还记得刚刚安装的独角兽（Gunicorn）么？终于轮到它出马了
+
+	../../virtualenv/bin/gunicorn -b 127.0.0.1:5000 -D manage:app
+
+> -b 表示使用ip及断开   
+> -D 表示后台运行
+
+>关于linux确实是小白，比如现在，其实应该配置一个upstart，但配置多次始终不成功，如果有大牛希望能帮忙教教。
+
+
+好，就目前来说，至少一个简单的，不考虑性能的轻博客已经部署成功，下面想想还缺少的必须的功能：
+
+1. 邮件验证
+2. 用户密码加密及加盐
+3. 对于发言的评论及反馈
+4. 有些发言的敏感词过滤
+
+等等，貌似功能还缺失很多，但不管怎么说，现在也能算是一个小的里程碑了。想想，还是很了不起的：）
+
 
 
 
